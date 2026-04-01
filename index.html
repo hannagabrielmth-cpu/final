@@ -1,0 +1,571 @@
+﻿<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DARKWEB PIRATES - ELITE STORE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --accent: #00ff88; --bg-dark: #050505; } 
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-dark); 
+            background-image: linear-gradient(to bottom, rgba(5, 5, 5, 0.9), rgba(5, 5, 5, 0.98)),
+                url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop'); 
+            background-size: cover; background-attachment: fixed; color: #e2e8f0; 
+        }
+
+
+
+
+        .cart-modal-overlay { backdrop-filter: blur(20px); background: rgba(0, 0, 0, 0.8); }
+        .glass-panel {
+    background: rgba(12, 12, 12, 0.96);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.95),
+        0 0 0 1px rgba(0, 255, 136, 0.12),
+        0 0 25px rgba(0, 255, 136, 0.18);
+
+
+    position: relative;
+}
+#crypto-modal,
+#verify-modal,
+.cart-modal-overlay {
+    background: rgba(0, 0, 0, 0.94);
+}
+        .card-cyber:hover .eye-overlay { opacity: 1; }
+        .eye-overlay { opacity: 0; background: rgba(0, 255, 136, 0.1); backdrop-filter: blur(4px); transition: all 0.4s ease; }
+        .btn-action { transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); cursor: pointer; }
+        .btn-action:hover { transform: translateY(-2px); filter: brightness(1.2); }
+        
+        .payment-input {
+            width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem; padding: 0.85rem 1rem; font-size: 0.875rem; color: white; outline: none; transition: all 0.3s ease;
+        }
+        .payment-input:focus { border-color: var(--accent); background: rgba(0, 255, 136, 0.05); }
+        .hidden-custom { display: none !important; }
+        
+        .copy-tooltip {
+            position: absolute; top: -35px; right: 0; background: #00ff88; color: black;
+            font-size: 10px; padding: 4px 8px; border-radius: 6px; opacity: 0;
+            transform: translateY(5px); transition: all 0.2s ease; pointer-events: none; font-weight: bold;
+        }
+        .copy-wallet-btn.copied .copy-tooltip { opacity: 1; transform: translateY(0); }
+        .verify-close-btn { position: absolute; top: 24px; right: 24px; cursor: pointer; color: #9ca3af; transition: color 0.2s; }
+        .verify-close-btn:hover { color: white; }
+
+
+
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+@keyframes modalPop {
+    0% {
+        transform: scale(0.96) translateY(10px);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+
+.glass-panel {
+    animation: modalPop 0.35s ease-out;
+}
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+
+
+
+    <div id="custom-payment-system" class="hidden-custom">
+        <div id="loader-modal" class="fixed inset-0 z-[300] flex items-center justify-center backdrop-blur-3xl bg-black/90 hidden-custom">
+            <div class="text-center">
+                <div class="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+                <h2 class="text-xl font-black text-white tracking-widest uppercase">Securing Connection...</h2>
+      
+</div>
+        </div>
+
+
+
+
+        <div id="crypto-modal" class="fixed inset-0 z-[301] flex items-center justify-center p-4 backdrop-blur-3xl bg-black/90 hidden-custom">
+            <div class="glass-panel w-full max-w-2xl rounded-[2.5rem] p-8 relative max-h-[90vh] overflow-y-auto">
+                <button onclick="closePaymentModals()" class="absolute top-6 right-6 p-2 text-gray-400 hover:text-white">✕</button>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
+                    <div class="space-y-6">
+                        <h3 class="text-2xl font-black text-white">Elite Asset Purchase</h3>
+<div class="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-4 text-center">
+    <p class="text-[10px] uppercase font-bold text-emerald-400 tracking-widest">
+        Amount To Pay
+    </p>
+    <p id="payment-amount" class="text-3xl font-black font-mono text-emerald-500">
+        $0
+    </p>
+</div>
+                        <div class="bg-white/5 p-4 rounded-2xl border border-white/10">
+                            <label class="text-[10px] text-gray-500 font-bold uppercase mb-2 block">Select Network</label>
+                            <select id="crypto-selector" class="payment-input text-sm">
+                                <option value="usdt_trc20">USDT (TRC20)</option>
+                                <option value="usdt_bep20">BNB (BEP20)</option>
+                                <option value="btc">Bitcoin (BTC)</option>
+                                
+                            </select>
+                        </div>
+                        <div class="text-center p-4 bg-white rounded-3xl">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=TDDaaz8MUpymccQU6LVfopNUNQc47QxtHn" class="mx-auto" id="qr-image">
+                        </div>
+                        <div class="w-full">
+                            <label class="text-[10px] text-gray-500 font-bold uppercase mb-2 block">Wallet Address</label>
+                            <div class="flex items-center bg-white/5 border border-white/10 rounded-xl overflow-hidden focus-within:border-emerald-500/50 transition-all">
+                                <input type="text" readonly id="wallet-address-input" value="TDDaaz8MUpymccQU6LVfopNUNQc47QxtHn" class="flex-1 bg-transparent py-3 px-4 text-[11px] font-mono text-emerald-500 outline-none border-none">
+                                <button type="button" class="copy-wallet-btn bg-white/5 px-4 self-stretch flex items-center justify-center hover:bg-emerald-500/10 transition-colors border-l border-white/10 relative" id="copy-btn">
+                                    <span>📋</span>
+                                    <span class="copy-tooltip">Copied</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                          <label class="text-[10px] text-emerald-500 font-bold uppercase mb-2 block">Email Address (Required)*</label>
+                        <input type="email" id="pay-email" placeholder="Email Address" required class="payment-input">
+                         <label class="text-[10px] text-emerald-500 font-bold uppercase mb-2 block">Telegram Username (Required)*</label>
+                        <input type="text" id="pay-telegram" placeholder="Telegram Username" required class="payment-input">
+                        <div class="relative">
+                            <label class="text-[10px] text-emerald-500 font-bold uppercase mb-2 block">Upload Screenshot (Required)*</label>
+                            <input type="file" id="pay-screenshot" required class="payment-input text-[10px] pt-4">
+                        </div>
+<input
+  type="text"
+  id="dynamic-field"
+  class="payment-input hidden-custom"
+  placeholder=""
+/>
+                        <button onclick="handleVerifyPayment()" class="w-full btn-action bg-emerald-500 text-black font-black py-4 rounded-2xl text-[11px] uppercase tracking-widest mt-4">Verify Payment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div id="verify-modal" class="fixed inset-0 z-[302] flex items-center justify-center p-4 backdrop-blur-3xl bg-black/90 hidden-custom">
+            <div class="glass-panel w-full max-w-md rounded-[3rem] p-10 text-center relative">
+                <button onclick="closePaymentModals()" class="verify-close-btn">✕</button>
+                <h3 class="text-2xl font-black mb-2 uppercase text-white">Payment Verification</h3>
+                <p id="order-id" class="text-emerald-500 font-mono font-bold mb-6">ORD-000000</p>
+                <div class="bg-black/50 rounded-2xl p-6 border border-white/5 mb-6">
+                    <p id="timer-display" class="text-4xl font-mono font-black text-white mb-2">05:00</p>
+                    <p id="status-text" class="text-xs text-gray-500 font-bold uppercase tracking-widest">Waiting for confirmation</p>
+                </div>
+                <a href="https://t.me/HannaG_Lady" target="_blank" class="btn-action w-full bg-[#229ED9] text-white py-4 rounded-2xl font-black flex items-center justify-center gap-3">
+                    CONTACT SUPPORT
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+
+
+
+    <script type="text/babel">
+        const { useState, useEffect } = React; 
+        const GIFT_CARDS = [ 
+            { id: 1, name: "Credit Card 1150$", price: 30, category: "Credit Cards", imageUrl: "img/1.png", details: ["Balance: $1,150", "Type: Visa Gold Non-VBV", "No OTP Required", "Full Billing Info"] },
+            { id: 2, name: "Credit Card 2000$", price: 50, category: "Credit Cards", imageUrl: "img/1.png", details: ["Balance: $2,000", "Type: Visa Gold Non-VBV", "No OTP Required", "Full Billing Info"] },
+            { id: 3, name: "Credit Card 3300$", price: 75, category: "Credit Cards", imageUrl: "img/1.png", details: ["Balance: $3,300", "Type: Master Platinum Non-VBV", "No OTP Required", "Full Billing Info"] },
+            { id: 4, name: "Credit Card 4700$", price: 100, category: "Credit Cards", imageUrl: "img/1.png", details: ["Balance: $4,700", "Type: Master Platinum Non-VBV", "No OTP Required", "Full Billing Info"] },
+            { id: 5, name: "Credit Card 7300$", price: 150, category: "Credit Cards", imageUrl: "img/1.png", details: ["Balance: $7,300", "Type: Visa Black Non-VBV", "No OTP Required", "Full Billing Info"] },
+            { id: 6, name: "Credit Card 10000$", price: 200, category: "Credit Cards", imageUrl: "img/1.png", details: ["Balance: $10,000", "Type: Visa Black Non-VBV", "No OTP Required", "Full Billing Info"] },
+            { id: 7, name: "Credit Card 15500$", price: 300, category: "Credit Cards", imageUrl: "img/1.png", details: ["Balance: $15,500", "Type: Master Black Non-VBV", "No OTP Required", "Full Billing Info"] },
+            { id: 8, name: "Credit Card 21000$", price: 400, category: "Credit Cards", imageUrl: "img/1.png", details: ["Balance: $21,000", "Type: Master Platinum Non-VBV", "No OTP Required", "Full Billing Info"] },
+            { id: 9, name: "Credit Card 27000$", price: 500, category: "Credit Cards", imageUrl: "img/1.png", details: ["Balance: $27,000", "Type: Master Black Non-VBV", "No OTP Required", "Full Billing Info"] },
+            { id: 10, name: "Credit Card 42500$", price: 750, category: "Credit Cards", imageUrl: "img/1.png", details: ["Balance: $42,500", "Type: Master Infinity Non-VBV", "No OTP Required", "Full Billing Info"] },
+            { id: 11, name: "Credit Card 60000$", price: 1000, category: "Credit Cards", imageUrl: "img/1.png", details: ["Balance: $60,000", "Type: Master Infinity Non-VBV", "No OTP Required", "Full Billing Info"] },
+            { id: 12, name: "Credit Card 100000$", price: 1500, category: "Credit Cards", imageUrl: "img/1.png", details: ["Balance: $100,000", "Type: Master Infinity Non-VBV", "No OTP Required", "Full Billing Info"] },
+            { id: 13, name: "PayPal Credit 2000$", price: 50, category: "PayPal Accounts", imageUrl: "img/2.png", details: ["Account: Business Aged", "Balance: $2,000 Credits", "Status: Verified", "Cookies: Included"] }, 
+ { id: 14, name: "PayPal Credit 3200$", price: 75, category: "PayPal Accounts", imageUrl: "img/2.png", details: ["Account: Business Aged", "Balance: $3,200 Credits", "Status: Verified", "Cookies: Included"] }, 
+ { id: 15, name: "PayPal Credit 4600$", price: 100, category: "PayPal Accounts", imageUrl: "img/2.png", details: ["Account: Business Aged", "Balance: $4,600 Credits", "Status: Verified", "Cookies: Included"] }, 
+ { id: 16, name: "PayPal Credit 10000$", price: 200, category: "PayPal Accounts", imageUrl: "img/2.png", details: ["Account: Business Aged", "Balance: $10,000 Credits", "Status: Verified", "Cookies: Included"] }, 
+ { id: 17, name: "PayPal Credit 25000$", price: 500, category: "PayPal Accounts", imageUrl: "img/2.png", details: ["Account: Business Aged", "Balance: $25,000 Credits", "Status: Verified", "Cookies: Included"] }, 
+            { id: 18, name: "Binance Gift Card 150USDT", price: 50, category: "Gift Cards", imageUrl: "img/3.png", details: ["Amount: 150 USDT", "Region: Global", "Redeem: Binance App", "Validity: Lifetime"] },
+            { id: 19, name: "Binance Gift Card 200 USDT", price: 75, category: "Gift Cards", imageUrl: "img/3.png", details: ["Amount: 200 USDT", "Region: Global", "Redeem: Binance App", "Validity: Lifetime"] },
+            { id: 20, name: "Binance Gift Card 300 USDT", price: 100, category: "Gift Cards", imageUrl: "img/3.png", details: ["Amount: 300 USDT", "Region: Global", "Redeem: Binance App", "Validity: Lifetime"] },
+            { id: 21, name: "Binance Gift Card 500 USDT", price: 150, category: "Gift Cards", imageUrl: "img/3.png", details: ["Amount: 500 USDT", "Region: Global", "Redeem: Binance App", "Validity: Lifetime"] },
+            { id: 22, name: "Binance Gift Card 750 USDT", price: 250, category: "Gift Cards", imageUrl: "img/3.png", details: ["Amount: 750 USDT", "Region: Global", "Redeem: Binance App", "Validity: Lifetime"] },
+            { id: 23, name: "Binance Gift Card 1000 USDT", price: 300, category: "Gift Cards", imageUrl: "img/3.png", details: ["Amount: 1000 USDT", "Region: Global", "Redeem: Binance App", "Validity: Lifetime"] },
+            { id: 24, name: "Binance Gift Card 2500 USDT", price: 800, category: "Gift Cards", imageUrl: "img/3.png", details: ["Amount: 2500 USDT", "Region: Global", "Redeem: Binance App", "Validity: Lifetime"] },
+            { id: 25, name: "Binance Gift Card 5000 USDT", price: 1200, category: "Gift Cards", imageUrl: "img/3.png", details: ["Amount: 5000 USDT", "Region: Global", "Redeem: Binance App", "Validity: Lifetime"] },
+            { id: 27, name: "TikTok Coins 100K", price: 25, category: "TikTok Coins", imageUrl: "img/4.png", details: ["Amount: 100,000 Coins", "Method: Direct ID Transfer", "Time: 5-15 Minutes", "Safe: 100% Guaranteed"] },
+{ id: 28, name: "TikTok Coins 250K", price: 50, category: "TikTok Coins", imageUrl: "img/4.png", details: ["Amount: 250,000 Coins", "Method: Direct ID Transfer", "Time: 5-15 Minutes", "Safe: 100% Guaranteed"] },
+{ id: 29, name: "TikTok Coins 500K", price: 85, category: "TikTok Coins", imageUrl: "img/4.png", details: ["Amount: 500,000 Coins", "Method: Direct ID Transfer", "Time: 5-15 Minutes", "Safe: 100% Guaranteed"] },
+{ id: 30, name: "TikTok Coins 1M", price: 150, category: "TikTok Coins", imageUrl: "img/4.png", details: ["Amount: 1,000,000 Coins", "Method: Direct ID Transfer", "Time: 5-15 Minutes", "Safe: 100% Guaranteed"] },
+{ id: 31, name: "Pubg UC 30K", price: 15, category: "Gaming", imageUrl: "img/5.png", details: ["Amount: 30,000 UC", "Method: Direct ID Transfer", "Time: 5-15 Minutes", "Safe: 100% Guaranteed"] },
+{ id: 32, name: "Pubg UC 75K", price: 30, category: "Gaming", imageUrl: "img/5.png", details: ["Amount: 75,000 UC", "Method: Direct ID Transfer", "Time: 5-15 Minutes", "Safe: 100% Guaranteed"] },
+{ id: 33, name: "Pubg UC 150K", price: 50, category: "Gaming", imageUrl: "img/5.png", details: ["Amount: 150,000 UC", "Method: Direct ID Transfer", "Time: 5-15 Minutes", "Safe: 100% Guaranteed"] },
+{ id: 34, name: "Pubg UC 250K", price: 75, category: "Gaming", imageUrl: "img/5.png", details: ["Amount: 250,000 UC", "Method: Direct ID Transfer", "Time: 5-15 Minutes", "Safe: 100% Guaranteed"] },
+{ id: 35, name: "Pubg UC 350K", price: 100, category: "Gaming", imageUrl: "img/5.png", details: ["Amount: 350,000 UC", "Method: Direct ID Transfer", "Time: 5-15 Minutes", "Safe: 100% Guaranteed"] },
+{ id: 36, name: "Pubg UC 750K", price: 200, category: "Gaming", imageUrl: "img/5.png", details: ["Amount: 750,000 UC", "Method: Direct ID Transfer", "Time: 5-15 Minutes", "Safe: 100% Guaranteed"] },
+{ id: 37, name: "Free Fire Diamond 30K", price: 15, category: "Gaming", imageUrl: "img/6.png", details: ["Amount: 30,000 Diamond", "Method: Direct ID Transfer", "Time: 5-15 Minutes", "Safe: 100% Guaranteed"] },
+{ id: 38, name: "Free Fire Diamond 75K", price: 30, category: "Gaming", imageUrl: "img/6.png", details: ["Amount: 75,000 Diamond", "Method: Direct ID Transfer", "Time: 5-15 Minutes", "Safe: 100% Guaranteed"] },
+{ id: 39, name: "Free Fire Diamond 150K", price: 50, category: "Gaming", imageUrl: "img/6.png", details: ["Amount: 150,000 Diamond", "Method: Direct ID Transfer", "Time: 5-15 Minutes", "Safe: 100% Guaranteed"] },
+{ id: 40, name: "Free Fire Diamond 250K", price: 75, category: "Gaming", imageUrl: "img/6.png", details: ["Amount: 250,000 Diamond", "Method: Direct ID Transfer", "Time: 5-15 Minutes", "Safe: 100% Guaranteed"] },
+{ id: 41, name: "Free Fire Diamond 350K", price: 100, category: "Gaming", imageUrl: "img/6.png", details: ["Amount: 350,000 Diamond", "Method: Direct ID Transfer", "Time: 5-15 Minutes", "Safe: 100% Guaranteed"] },
+{ id: 42, name: "Free Fire Diamond 750K", price: 200, category: "Gaming", imageUrl: "img/6.png", details: ["Amount: 750,000 Diamond", "Method: Direct ID Transfer", "Time: 5-15 Minutes", "Safe: 100% Guaranteed"] },
+        ]; 
+
+
+
+
+        const CATEGORIES = ["All", "Credit Cards", "PayPal Accounts", "Gift Cards", "TikTok Coins", "Gaming"]; 
+        const Icon = ({ name, size = 20, className = "" }) => <i data-lucide={name} width={size} height={size} className={className}></i>; 
+
+
+
+
+        function App() { 
+            const [isLoading, setIsLoading] = useState(true); 
+            const [cart, setCart] = useState([]); 
+            const [activeCategory, setActiveCategory] = useState("All"); 
+            const [searchQuery, setSearchQuery] = useState(""); 
+            const [selectedCard, setSelectedCard] = useState(null); 
+            const [isCartOpen, setIsCartOpen] = useState(false);
+            const [footerModal, setFooterModal] = useState(null);
+
+
+
+
+            useEffect(() => { setTimeout(() => setIsLoading(false), 1000); }, []); 
+            useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, [isLoading, selectedCard, isCartOpen, activeCategory, footerModal]); 
+
+
+
+
+            const filteredProducts = GIFT_CARDS.filter(p => 
+                (activeCategory === "All" || p.category === activeCategory) && 
+                p.name.toLowerCase().includes(searchQuery.toLowerCase()) 
+            ); 
+
+
+
+
+            if (isLoading) return <div className="fixed inset-0 bg-black flex items-center justify-center"><div className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div></div>; 
+
+
+
+
+            return ( 
+                <div className="min-h-screen flex flex-col">
+                    <header className="sticky top-0 z-[100] bg-black/80 backdrop-blur-xl border-b border-white/5 px-6 py-4"> 
+                        <div className="max-w-7xl mx-auto flex flex-col gap-4"> 
+                            <div className="flex items-center justify-between"> 
+                                <div className="flex items-center gap-4"> 
+                                    <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20"> 
+                                        <Icon name="skull" size={28} className="text-black" /> 
+                                    </div> 
+                                    <div> 
+                                        <h1 className="text-2xl font-black tracking-tighter leading-none">DARK<span className="text-emerald-500">PIRATES</span></h1> 
+                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em]">Elite Shadow Market</p> 
+                                    </div> 
+                                </div> 
+                                <div className="flex items-center gap-4"> 
+                                    <button onClick={() => setIsCartOpen(true)} className="p-3 bg-white/5 rounded-2xl border border-white/10 relative"> 
+                                        <Icon name="shopping-cart" /> 
+                                        {cart.length > 0 && <span className="absolute -top-1 -right-1 bg-emerald-500 text-black text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-black">{cart.length}</span>} 
+                                    </button>
+                                </div> 
+                            </div> 
+                            <nav className="flex items-center gap-2 overflow-x-auto py-1"> 
+                                {CATEGORIES.map(cat => ( 
+                                    <button key={cat} onClick={() => setActiveCategory(cat)} className={`px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all whitespace-nowrap ${activeCategory === cat ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20' : 'bg-white/5 text-gray-400 border border-white/5'}`}> 
+                                        {cat} 
+                                    </button> 
+                                ))} 
+                            </nav> 
+                        </div> 
+                    </header>
+
+
+
+
+                    <main className="max-w-7xl mx-auto px-6 py-12 w-full"> 
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"> 
+                            {filteredProducts.map(card => ( 
+                                <div key={card.id} className="card-cyber glass-panel rounded-[2.5rem] p-3 group transition-all duration-500 hover:border-emerald-500/40"> 
+                                    <div className="relative h-56 rounded-[2rem] overflow-hidden mb-5 cursor-pointer" onClick={() => setSelectedCard(card)}> 
+                                        <img src={card.imageUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" /> 
+                                        <div className="eye-overlay absolute inset-0 flex items-center justify-center"> 
+                                            <div className="bg-emerald-500 p-4 rounded-full shadow-2xl scale-0 group-hover:scale-100 transition-all duration-500"> 
+                                                <Icon name="eye" className="text-black" size={28} /> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div className="px-3 pb-2"> 
+                                        <h3 className="font-bold text-xl mb-1">{card.name}</h3> 
+                                        <p className="text-emerald-500 font-mono font-black text-2xl mb-5">${card.price}</p> 
+                                        <div className="flex gap-2"> 
+                                            <button
+  onClick={() => {
+    window.selectedProduct = card;
+    startCustomPaymentFlow();
+  }}
+  className="btn-action flex-1 bg-emerald-500 text-black font-black py-4 rounded-2xl text-[11px] uppercase tracking-widest"
+>
+  Buy Now
+</button>
+                                            <button onClick={() => setCart([...cart, card])} className="btn-action p-4 bg-white/5 rounded-2xl border border-white/10"> 
+                                                <Icon name="plus" size={20} /> 
+                                            </button> 
+                                        </div> 
+                                    </div> 
+                                </div> 
+                            ))} 
+                        </div> 
+
+
+
+
+                        {isCartOpen && (
+                            <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 cart-modal-overlay">
+                                <div className="glass-panel w-full max-w-md rounded-[2.5rem] p-8 relative border border-white/10 bg-[#0a0a0a]">
+                                    <button onClick={() => setIsCartOpen(false)} className="absolute top-6 right-6 text-gray-400 hover:text-white bg-white/10 w-10 h-10 rounded-full flex items-center justify-center">✕</button>
+                                    <h3 className="text-2xl font-black mb-6 uppercase text-emerald-500">Shopping Cart</h3>
+                                    <div className="space-y-4 max-h-[400px] overflow-y-auto mb-6 pr-2">
+                                        {cart.length === 0 ? <div className="text-center py-20 text-gray-500 uppercase font-bold text-xs">Empty</div> : 
+                                            cart.map((item, index) => (
+                                                <div key={index} className="flex justify-between items-center p-4 bg-white/[0.03] rounded-2xl border border-white/5">
+                                                    <div><h4 className="font-bold text-sm text-white">{item.name}</h4><p className="text-emerald-500 font-mono font-black text-sm">${item.price}</p></div>
+                                                    <button onClick={() => setCart(cart.filter((_, i) => i !== index))} className="text-[10px] font-black bg-red-500/10 text-red-500 px-3 py-2 rounded-lg">Remove</button>
+                                                </div>
+                                            ))
+                                        }
+                                    </div>
+                                   {cart.length > 0 && (
+  <button
+    onClick={() => {
+      window.selectedProduct = {
+        price: cart.reduce((sum, item) => sum + item.price, 0),
+        category: "Cart"
+      };
+      setIsCartOpen(false);
+      startCustomPaymentFlow();
+    }}
+    className="w-full bg-emerald-500 text-black font-black py-5 rounded-2xl text-[11px] uppercase tracking-widest"
+  >
+    Checkout Now
+  </button>
+)}
+                                </div>
+                            </div>
+                        )}
+                    </main>
+
+
+
+
+                    {/* الفوتر الأصلي مع التحسينات */}
+                    <footer className="mt-auto bg-black/80 border-t border-white/5 pt-16 pb-8 px-6"> 
+                        <div className="max-w-7xl mx-auto"> 
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16"> 
+                                <div className="col-span-1 md:col-span-2 text-center md:text-left"> 
+                                    <h2 className="text-2xl font-black mb-4">DARK<span className="text-emerald-500">PIRATES</span></h2> 
+                                    <p className="text-gray-500 max-w-sm text-sm leading-relaxed">The premier destination for elite digital assets. Secured, encrypted, and untraceable. Join the shadows today.</p> 
+                                </div> 
+                                <div className="flex flex-col gap-4 text-center md:text-left"> 
+                                    <button onClick={() => setFooterModal('about')} className="text-gray-400 hover:text-emerald-500 font-bold transition-colors">About Us</button> 
+                                    <button onClick={() => setFooterModal('contact')} className="text-gray-400 hover:text-emerald-500 font-bold transition-colors">Contact Us</button> 
+                                    <button onClick={() => setFooterModal('faq')} className="text-gray-400 hover:text-emerald-500 font-bold transition-colors">F.A.Q</button> 
+                                    <button onClick={() => setFooterModal('terms')} className="text-gray-400 hover:text-emerald-500 font-bold transition-colors">Terms of Use</button> 
+                                </div> 
+                                <div className="flex flex-col items-center md:items-end gap-6"> 
+                                    <a href="https://t.me/HannaG_Lady" target="_blank" className="btn-action bg-[#229ED9] text-white px-8 py-4 rounded-2xl font-black flex items-center gap-3 shadow-xl"> 
+                                        <Icon name="send" /> SUPPORT 
+                                    </a> 
+                                    <div className="flex gap-4 text-gray-700"> 
+                                        <Icon name="shield-check" size={24} /> <Icon name="lock" size={24} /> <Icon name="globe" size={24} /> 
+                                    </div> 
+                                </div> 
+                            </div> 
+                            <p className="text-center text-[10px] text-gray-700 font-mono tracking-[0.5em] uppercase">© 2024 PIRATE PROTOCOL. ALL RIGHTS RESERVED.</p> 
+                        </div> 
+                    </footer>
+
+
+
+
+                    {selectedCard && ( 
+                        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 backdrop-blur-2xl bg-black/80"> 
+                            <div className="glass-panel w-full max-w-lg rounded-[3rem] p-8 animate-in zoom-in duration-300"> 
+                                <div className="flex justify-between items-start mb-8"> 
+                                    <div><p className="text-emerald-500 text-[10px] font-black uppercase mb-1">{selectedCard.category}</p><h2 className="text-3xl font-black">{selectedCard.name}</h2></div>
+                                    <button onClick={() => setSelectedCard(null)} className="p-2"><Icon name="x" /></button> 
+                                </div> 
+                                <div className="space-y-3 mb-10"> 
+                                    {selectedCard.details.map((detail, i) => ( 
+                                        <div key={i} className="p-5 rounded-2xl bg-white/[0.03] flex items-center gap-4"><Icon name="hash" size={16} /><span className="font-bold text-sm">{detail}</span></div> 
+                                    ))} 
+                                </div> 
+                                <div className="flex items-center justify-between p-6 bg-emerald-500/10 rounded-[2rem] border border-emerald-500/20"> 
+                                    <span className="text-3xl font-mono font-black text-emerald-500">${selectedCard.price}</span> 
+                                    <button onClick={() => { 
+  window.selectedProduct = selectedCard;
+  setSelectedCard(null); 
+  startCustomPaymentFlow(); 
+}} className="btn-action bg-emerald-500 text-black px-12 py-4 rounded-2xl font-black uppercase">
+  Purchase
+</button> 
+                                </div> 
+                            </div> 
+                        </div> 
+                    )}
+
+
+
+
+                    {footerModal && ( 
+                        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 backdrop-blur-3xl bg-black/90"> 
+                            <div className="glass-panel w-full max-w-md rounded-[2.5rem] p-10 relative"> 
+                                <button onClick={() => setFooterModal(null)} className="absolute top-6 right-6 p-2"><Icon name="x" /></button> 
+                                <h3 className="text-2xl font-black mb-6 uppercase text-emerald-500">{footerModal} Information</h3> 
+                                <div className="text-gray-400 text-sm leading-relaxed space-y-4"> 
+                                    {footerModal === 'about' && <p>DarkPirates is an elite marketplace providing the most secure digital assets since 2024.</p>} 
+                                    {footerModal === 'contact' && <p>Contact us via Telegram @HannaG_Lady for 24/7 priority support.</p>} 
+                                    {footerModal === 'faq' && <p>Payments are 100% crypto-based. Delivery is instant.</p>} 
+                                    {footerModal === 'terms' && <p>All sales are final. We guarantee the quality of every file.</p>} 
+                                </div> 
+                            </div> 
+                        </div> 
+                    )}
+                </div>
+            ); 
+        }
+        const root = ReactDOM.createRoot(document.getElementById('root')); 
+        root.render(<App />); 
+    </script>
+
+
+
+
+    <script>
+        let countdownInterval;
+        const wallets = {
+            usdt_trc20: 'TDDaaz8MUpymccQU6LVfopNUNQc47QxtHn',
+            usdt_bep20: '0x33a10d38b547f017b9368d5da7ae865ab1c30b72',
+            btc: 'bc1ql7zc5gs5e429f7sh7s8mdglxmx806zjfxt650fj4jngu2prx6d2qcmdhwd',
+           
+        };
+
+
+
+
+        function startCustomPaymentFlow() {
+            document.getElementById('custom-payment-system').classList.remove('hidden-custom');
+            document.getElementById('loader-modal').classList.remove('hidden-custom');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => {
+                document.getElementById('loader-modal').classList.add('hidden-custom');
+                document.getElementById('crypto-modal').classList.remove('hidden-custom');
+if (window.selectedProduct) {
+    document.getElementById('payment-amount').innerText =
+        '$' + window.selectedProduct.price;
+}
+const dynamicInput = document.getElementById('dynamic-field');
+
+
+
+
+if (window.selectedProduct) {
+    dynamicInput.classList.remove('hidden-custom');
+
+
+
+
+    if (window.selectedProduct.category === "Gaming") {
+        dynamicInput.placeholder = "Game ID (Required)";
+    }
+    else if (window.selectedProduct.category === "TikTok Coins") {
+        dynamicInput.placeholder = "TikTok UserName (Required)";
+
+    }
+    else {
+        dynamicInput.classList.add('hidden-custom');
+        dynamicInput.value = '';
+    }
+}
+            }, 1000);
+        }
+
+
+
+
+        document.getElementById('crypto-selector')?.addEventListener('change', (e) => {
+            const addr = wallets[e.target.value];
+            document.getElementById('wallet-address-input').value = addr;
+            document.getElementById('qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${addr}`;
+        });
+
+
+
+
+        document.getElementById('copy-btn')?.addEventListener('click', function() {
+            navigator.clipboard.writeText(document.getElementById('wallet-address-input').value);
+            this.classList.add('copied');
+            setTimeout(() => this.classList.remove('copied'), 1500);
+        });
+
+
+
+
+        function handleVerifyPayment() {
+            if (!document.getElementById('pay-email').value || !document.getElementById('pay-screenshot').value) {
+                alert("Please fill required fields."); return;
+            }
+            document.getElementById('crypto-modal').classList.add('hidden-custom');
+            document.getElementById('verify-modal').classList.remove('hidden-custom');
+            document.getElementById('order-id').innerText = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+            let timer = 300;
+            clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                let mins = Math.floor(timer / 60), secs = timer % 60;
+                document.getElementById('timer-display').textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                if (--timer < 0) clearInterval(countdownInterval);
+            }, 1000);
+        }
+
+
+
+
+        function closePaymentModals() {
+            document.getElementById('custom-payment-system').classList.add('hidden-custom');
+            document.querySelectorAll('#custom-payment-system > div').forEach(el => el.classList.add('hidden-custom'));
+            document.body.style.overflow = 'auto';
+            clearInterval(countdownInterval);
+        }
+    </script>
+
+</body>
+</html>
